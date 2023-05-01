@@ -4,12 +4,13 @@ import astropy.units as u
 
 
 class Planet(object):
-    def __init__(self, orbital_period, Kp=0, vsys=0, T0=0, inclination=90*u.deg):
+    def __init__(self, orbital_period, Kp=0, vsys=0, T0=0, inclination=90*u.deg, coords = None):
         self.orbital_period = orbital_period
         self.Kp = Kp
         self.vsys = vsys
         self.T0 = T0
         self.inclination = inclination
+        self.coords = coords
 
     @property
     def vsys(self):
