@@ -29,7 +29,7 @@ class ShiftRestFrameModule(Module):
 
     def process(self, dataset, debug=False):
         if not self.target is None:
-            self.rvs = self.target.radial_velocity(obs_time=dataset.obstimes)
+            self.rvs = -dataset.vbar + self.target.radial_velocity(obs_time=dataset.obstimes)
 
         if isinstance(dataset, CCF_Dataset):
             for exp in range(dataset.num_exposures):
@@ -69,11 +69,11 @@ class CoAddExposures(Module):
 
     def process(self, dataset, debug=False):
         if not dataset.errors is None:
-            combined_errors = np.sqrt(np.sum(dataset.errors**2, axis=0))
+            combined_errors = np.sqrt(np.nansum(dataset.errors**2, axis=0))
         if self.weights is None:
             self.weights = np.ones(len(dataset.num_exposures))
         res = np.nansum((self.weights*dataset.spec.T).T, axis=0)
-        return dataset.__class__(res[np.newaxis,:], np.mean(dataset.wavelengths,axis=0)[np.newaxis,:], combined_errors[np.newaxis,:])
+        return dataset.__class__(res[np.newaxis,:], np.nanmean(dataset.wavelengths,axis=0)[np.newaxis,:], combined_errors[np.newaxis,:])
 
 class CoAddOrders(Module):
     def initialise(self, weights=None):
