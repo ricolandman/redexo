@@ -4,12 +4,38 @@ import astropy.units as u
 
 
 class Planet(object):
-    def __init__(self, orbital_period, Kp=0, vsys=0, T0=0, inclination=90*u.deg):
+    """
+    Class for defining the observing target.
+    """
+    def __init__(self, orbital_period, Kp=0, vsys=0,
+                 T0=0, inclination=90*u.deg, coords=None):
+        """
+        Parameters
+        ----------
+        orbital_period : float
+           Orbital period of the planet in days.
+        Kp : float
+           Semi-major radial velocity amplitude of the planet in km/s.
+        vsys : float
+           Systemic velocity of the system in km/s.
+        T0 : float
+            Mid-transit ephimeris in BJD.
+        inclination : float
+            Inclination of the orbit in radians.
+        coords : astropy.coordinates.SkyCoord
+            Sky coordinates of the observed target.
+
+        Returns
+        -------
+        NoneType
+            None
+        """
         self.orbital_period = orbital_period
         self.Kp = Kp
         self.vsys = vsys
         self.T0 = T0
         self.inclination = inclination
+        self.coords = coords
 
     @property
     def vsys(self):
@@ -52,24 +78,45 @@ class Planet(object):
         self._transit_start = value
 
     def orbital_phase(self, obs_time):
-        phase = ((obs_time-self.T0)/self.orbital_period)%1
-        phase_around_zero = np.sign(0.5-phase)*np.minimum(phase, np.abs(1-phase))
+        """
+        Method for calculating the orbital phase of the planet
+        for given observing times
+        """
+        phase = ((obs_time-self.T0)/self.orbital_period) % 1
+        phase_around_zero = np.sign(0.5 - phase) * np.minimum(
+            phase, np.abs(1 - phase))
         return phase_around_zero
 
     def radial_velocity(self, obs_time=None, phase=None):
+        """
+        Method for calculating the radial velocity of the planet
+        for given observing times or orbital phases.
+        """
         if phase is None and obs_time is None:
-            raise ValueError("Provide either the oberving time in bjd or phase of the orbit")
+            raise ValueError(("Provide either the oberving time in bjd"
+                              " or phase of the orbit"))
         if phase is not None:
-            return self.vsys + self.Kp*np.sin(2*np.pi*phase)*np.sin(self.inclination)
+            return self.vsys + self.Kp*np.sin(2*np.pi*phase) * \
+                np.sin(self.inclination)
         else:
-            return self.vsys + self.Kp*np.sin(2*np.pi*self.orbital_phase(obs_time))*np.sin(self.inclination)
+            return self.vsys + self.Kp*np.sin(
+                2*np.pi*self.orbital_phase(obs_time))
 
     def in_transit(self, obs_time=None, phase=None):
+        """
+        Method for calculating if the exposure is within
+        the transit.
+        """
+        if not hasattr(self, '_transit_start'):
+            raise NotImplementedError(
+                ("Calculation of the transit start time not yet implemented"
+                 "Please assign ``transit_start`` manually"))
         if phase is None and obs_time is None:
-            raise ValueError("Provide either the observing time in bjd or phase of the orbit")
+            raise ValueError(("Provide either the oberving time in bjd"
+                              " or phase of the orbit"))
         if phase is None:
             phase = self.orbital_phase(obs_time)
-        return np.abs(phase)<self.transit_start
+        return np.abs(phase) < self.transit_start
 
 
 def load_from_exoplanet_archive(name):
