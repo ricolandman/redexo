@@ -46,17 +46,26 @@ class CrossCorrelationModule(Module):
     def process(self, dataset, order_idx, debug=False):
         CCF = np.zeros((dataset.num_exposures, dataset.num_orders,
                         self.rv_grid.size))
+        if self.empirical_error:
+            errors_est = np.nanstd(dataset.spec, axis=-1)
         for exp in range(dataset.num_exposures):
             nans = np.isnan(dataset.spec[exp])
             wl_exp = dataset.wavelengths[exp][~nans]
             spec_exp = dataset.spec[exp][~nans]
-            errors_exp = dataset.errors[exp][~nans]
+            if self.empirical_error:
+                errors_exp = errors_est[exp]*np.nanmean(
+                    dataset.errors[exp][~nans])
+            else:   
+                errors_exp = dataset.errors[exp][~nans]
+            # Calculate grid for shifted wavelengths
             shifted_wavelengths = wl_exp*self.beta_grid[:, np.newaxis]
 
             shifted_template = interp1d(self.template_wl, self.template,
                                         bounds_error=True)(shifted_wavelengths)
+            # Remove mean from each template
             shifted_template = shifted_template.T - np.mean(shifted_template,
                                                             axis=1)
+            # Calculate CCF using matrix-vector-multiplication
             if self.error_weighted:
                 CCF[exp] = (spec_exp/errors_exp**2).dot(shifted_template)
             else:
