@@ -87,7 +87,7 @@ class Pipeline(object):
                 self.module_names[start_idx - 1])
         else:
             start_idx = 0
-        
+
         if end is not None:
             if end not in self.module_names:
                 raise ValueError("Module name {0} not found in pipeline"
@@ -160,7 +160,8 @@ class Pipeline(object):
 
     def write_results(self, filepath, modules=None):
         """
-        Method for writing the results  from modules to 
+        Method for writing the results  from modules to
+        fits files.
         Parameters
         ----------
         name: str

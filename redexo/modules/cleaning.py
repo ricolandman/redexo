@@ -1,6 +1,6 @@
 __all__ = ['OutlierFlaggingModule', 'PolynomialContinuumRemovalModule',
            'FlagAbsorptionEmissionModule',
-            'SavGolContinuumRemovalModule', 'GaussianContinuumRemovalModule']
+           'SavGolContinuumRemovalModule', 'GaussianContinuumRemovalModule']
 from .base import Module
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,7 +47,7 @@ class FlagAbsorptionEmissionModule(Module):
         if debug:
             print('Masking {0:.2f}% of the data'.format(
                 np.sum(~mask)/mask.size*100))
-        dataset.spec[:,~mask] = np.nan
+        dataset.spec[:, ~mask] = np.nan
         return dataset
 
 

@@ -1,4 +1,6 @@
-__all__ = ['ShiftRestFrameModule','InjectSignalModule','CoAddExposures', 'CoAddOrders', 'make_kp_vsys_map', 'highpass_gaussian','broaden']
+__all__ = ['ShiftRestFrameModule', 'InjectSignalModule', 'CoAddExposures',
+           'CoAddOrders', 'make_kp_vsys_map', 'highpass_gaussian',
+           'broaden']
 from .base import Module
 from ..core.dataset import Dataset, CCF_Dataset
 import numpy as np
@@ -83,6 +85,7 @@ class ShiftRestFrameModule(Module):
                 dataset.spec[exp] = interp1d(
                     new_wl, dataset.spec[exp])(dataset.wavelengths)
         return dataset
+
 
 class InjectSignalModule(Module):
     """

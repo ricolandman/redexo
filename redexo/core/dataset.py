@@ -20,7 +20,7 @@ class Dataset(object):
             added using `add_exposure`.
         wavelengths: np.ndarray
             Array with wavelength bins, should have dimensions:
-            (exposures, orders, wavelengths). Can also be None and iteratively 
+            (exposures, orders, wavelengths). Can also be None and iteratively
             added using `add_exposure`.
         errors: np.ndarray
             Array with errors, should have dimensions:
@@ -52,7 +52,7 @@ class Dataset(object):
         self._obstimes = obstimes
         if spec is not None:
             if spec.ndim == 2:
-                self.spec = spec[:, np.newaxis, :] 
+                self.spec = spec[:, np.newaxis, :]
             else:
                 self.spec = spec
 
@@ -62,7 +62,7 @@ class Dataset(object):
                     (self.num_exposures, self.num_orders, 1))
             elif wavelengths.ndim == 2:
                 self.wavelengths = np.tile(
-                    wavelengths[np.newaxis, :, :], 
+                    wavelengths[np.newaxis, :, :],
                     (self.num_exposures, 1, 1))
             else:
                 self.wavelengths = wavelengths
@@ -98,7 +98,7 @@ class Dataset(object):
     @property
     def vbar(self):
         return np.array(self._vbar)
-    
+
     def add_exposure(self, spectrum, wl, errors, vbar=None,
                      obstime=None, **kwargs):
         """
@@ -263,8 +263,6 @@ class Dataset(object):
         self.spec = np.zeros(shape)
         self.wavelengths = np.zeros(shape)
         self.errors = np.zeros(shape)
-        self.vbar = []
-        self.obstimes = []
         self.header_info = {}
 
     def copy(self):
@@ -313,7 +311,7 @@ class CCF_Dataset(Dataset):
             return CCF_Dataset(self.spec[:, order, np.newaxis],
                                self.rv_grid[:, order, np.newaxis],
                                self.vbar, self.obstimes, *self.header_info)
-        
+
     def normalize(self, exclude_region=50):
         """
         Method to normalize CCF maps

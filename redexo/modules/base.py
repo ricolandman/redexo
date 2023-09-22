@@ -1,8 +1,9 @@
 __all__ = ['Module']
 
+
 class Module(object):
-    def __init__(self, name=None, per_order=False, **kwargs):
-        self.name = name
+    def __init__(self, savename=None, per_order=False, **kwargs):
+        self.name = savename
         self.per_order = per_order
         self.per_order_possible = True
         self.initialise(**kwargs)
