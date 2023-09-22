@@ -138,13 +138,11 @@ class CrossCorrelationModuleFast(Module):
 
         # Remove mean from each template
         shifted_template = shifted_template - np.mean(shifted_template, axis=0)
-        print('Template:', shifted_template.shape)
         # Calculate CCF using matrix-vector-multiplication
         if self.error_weighted:
             CCF = (data/errors**2).dot(shifted_template)
         else:
             CCF = (data).dot(shifted_template)
-        print('CCF:', CCF.shape)
         rv_matrix = np.tile(self.rv_grid[np.newaxis, np.newaxis, :],
                             (dataset.num_exposures, dataset.num_orders, 1))
         res = CCF_Dataset(spec=CCF, rv_grid=rv_matrix,
