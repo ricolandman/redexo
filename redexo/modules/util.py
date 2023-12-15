@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import copy
 
 
-def make_kp_vsys_map(ccf_map, Kp_list, target):
+def make_kp_vsys_map(ccf_map, Kp_list, target, normalize=True):
     """
     Function for calculating the Kp-vsys map commonly shown
     in high-res transit papers.
@@ -23,10 +23,12 @@ def make_kp_vsys_map(ccf_map, Kp_list, target):
         Array with Kp values to evaluate
     target: ``redexo.Planet``
         Planet to calculate the Kp-vsys map for.
+    normalize: bool
+        Whether to normalize the Kp-vsys map.
     Returns
     -------
     snr_map: np.ndarray
-        Kp-vsys map with signal-to-noise ratio's.
+        Kp-vsys map.
     """
     snr_map = np.zeros((len(Kp_list), ccf_map.rv_grid.shape[-1]))
     mock_target = copy.deepcopy(target)
@@ -37,7 +39,8 @@ def make_kp_vsys_map(ccf_map, Kp_list, target):
         flat_ccf = CoAddExposures(
             weights=mock_target.in_transit(ccf_map.obstimes))(
                 restframe_ccf_map)
-        flat_ccf.normalize()
+        if normalize:
+            flat_ccf.normalize()
         snr_map[i] = flat_ccf.spec[0, 0]
     return snr_map
 

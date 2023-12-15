@@ -99,15 +99,19 @@ class PolynomialContinuumRemovalModule(Module):
         self.poly_order = poly_order
 
     def process(self, dataset, order_idx, debug=False):
-        for exp in range(dataset.num_exposures):
-            nans = np.isnan(dataset.spec[exp])
-            cont_model = np.poly1d(np.polyfit(dataset.wavelengths[exp][~nans],
-                                              dataset.spec[exp][~nans],
-                                              self.poly_order))
-            continuum = cont_model(dataset.wavelengths[exp][~nans])
-            dataset.spec[exp][~nans] = dataset.spec[exp][~nans]/continuum
-            dataset.errors[exp][~nans] = dataset.errors[exp][~nans]/continuum
-        return dataset
+        try:
+            for exp in range(dataset.num_exposures):
+                nans = np.isnan(dataset.spec[exp])
+                cont_model = np.poly1d(np.polyfit(dataset.wavelengths[exp][~nans],
+                                                dataset.spec[exp][~nans],
+                                                self.poly_order))
+                continuum = cont_model(dataset.wavelengths[exp][~nans])
+                dataset.spec[exp][~nans] = dataset.spec[exp][~nans]/continuum
+                dataset.errors[exp][~nans] = dataset.errors[exp][~nans]/continuum
+            return dataset
+        except:
+            print('Error for order ', order_idx)
+            exit()
 
 
 class SavGolContinuumRemovalModule(Module):
